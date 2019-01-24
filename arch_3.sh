@@ -1,76 +1,40 @@
 #!/bin/bash
-echo 'Прписываем имя компьютера'
-echo "McDAC" > /etc/hostname
-ln -svf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+echo 'Установка AUR (aurman)'
+sudo pacman -Syy
+sudo pacman -S git --noconfirm
 
-echo '3.4 Добавляем русскую локаль системы'
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-echo "ru_RU.UTF-8 UTF-8" >> /etc/locale.gen 
+# Обновляем систему
+sudo pacman -Syu
 
-echo 'Обновим текущую локаль системы'
-locale-gen
+# Создаём aurman_install директорию и переходим в неё
+mkdir -p /tmp/aurman_install
+cd /tmp/aurman_install
 
-echo 'Указываем язык системы'
-echo 'LANG="ru_RU.UTF-8"' > /etc/locale.conf
+# Установка "aurman" из AUR
+git clone https://aur.archlinux.org/aurman-git.git
+cd aurman-git
+makepkg -si --needed --noconfirm --skippgpcheck
+rm -rf aurman_install
 
-echo 'Вписываем KEYMAP=ru FONT=cyr-sun16'
-echo 'KEYMAP=ru' >> /etc/vconsole.conf
-echo 'FONT=cyr-sun16' >> /etc/vconsole.conf
+echo 'Установка программ'
+sudo pacman -S firefox ufw cherrytree libreoffice libreoffice-fresh-ru vlc qt4 qbittorrent f2fs-tools dosfstools ntfs-3g alsa-lib alsa-utils gnome-calculator file-roller p7zip unrar gvfs aspell-ru pulseaudio --noconfirm 
+#sudo pacman -S firefox ufw obs-studio veracrypt freemind filezilla cherrytree gimp libreoffice libreoffice-fresh-ru kdenlive audacity pidgin screenfetch vlc qt4 qbittorrent f2fs-tools dosfstools ntfs-3g alsa-lib alsa-utils gnome-calculator file-roller p7zip unrar gvfs aspell-ru pulseaudio --noconfirm 
+aurman -S dropbox hunspell-ru pamac-aur --noconfirm 
+#aurman -S dropbox joxi obs-linuxbrowser xflux xflux-gui-git purple-vk-plugin purple-facebook pidgin-encryption sublime-text2 hunspell-ru pamac-aur --noconfirm 
 
-echo 'Создадим загрузочный RAM диск'
-mkinitcpio -p linux
 
-echo 'Создаем root пароль'
-passwd
+echo 'Установка тем'
+aurman -S osx-arc-shadow papirus-maia-icon-theme-git --noconfirm
 
-echo '3.5 Устанавливаем загрузчик'
-pacman -Syy
-pacman -S grub --noconfirm 
-grub-install /dev/sda
+echo 'Создаем нужные директории.'
+sudo pacman -S xdg-user-dirs
+xdg-user-dirs-update
+mkdir ~/Dropbox/
+mkdir ~/Dropbox/WALLPAPERS
+mkdir ~/Dropbox/WALLPAPERS/GREEN/
 
-echo 'Обновляем grub.cfg'
-grub-mkconfig -o /boot/grub/grub.cfg 
+echo 'Включаем сетевой экран'
+sudo ufw enable
 
-echo 'Добавляем пользователя'
-useradd -m -g users -G wheel -s /bin/bash valery
-
-echo 'Устанавливаем пароль пользователя'
-passwd valery
-echo 'Устанавливаем SUDO'
-echo '%wheel ALL=(ALL) ALL' >> /etc/sudoers
-
-echo 'Раскомментируем репозиторий multilib Для работы 32-битных приложений в 64-битной системе.'
-echo '[multilib]' >> /etc/pacman.conf
-echo 'Include = /etc/pacman.d/mirrorlist' >> /etc/pacman.conf
-pacman -Syy
-
-echo "Куда устанавливем Arch Linux на виртуальную машину?"
-read -p "1 - Да, 0 - Нет: " vm_setting
-if [[ $vm_setting == 0 ]]; then
-  gui_install="xorg-server xorg-drivers xorg-xinit"
-elif [[ $vm_setting == 1 ]]; then
-  gui_install="xorg-server xorg-drivers xorg-xinit virtualbox-guest-utils"
-fi
-
-echo 'Ставим иксы и драйвера'
-pacman -S $gui_install --noconfirm
-
-echo 'Ставим Xfce, LXDM и сеть'
-pacman -S xfce4 xfce4-goodies lxdm networkmanager network-manager-applet ppp --noconfirm
-
-echo 'Ставим шрифты'
-pacman -S ttf-liberation ttf-dejavu --noconfirm 
-
-echo 'Подключаем автозагрузку менеджера входа и интернет'
-systemctl enable lxdm NetworkManager
-
-echo 'Ставим wget'
-pacman -S wget --noconfirm 
-
-echo 'Сделайте exit и reboot. После перезагрузки заходим под пользователем'
-echo 'После чего скачайте и запустите скрипт, который установит программы, настройки XFCE и темы:'
-echo 'wget ordanax.ru/arch/arch_3.sh'
-echo 'sh arch_3.sh'
-exit
-read -p "Пауза 3 ceк." -t 3
-reboot
+echo 'Установка завершена!'
+rm -rf ~/arch_3.sh
