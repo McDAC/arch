@@ -1,1 +1,3 @@
-curl -i https://git.io -F "url=https://raw.githubusercontent.com/McDAC/arch/master/arch1.sh" -F "code=arch1.sh"
+curl -i https://git.io -F "url=https://raw.githubusercontent.com/McDAC/arch/master/1arch.sh" -F "code=1arch.sh"
+git.io/1arch.sh
+git.io/2arch.sh
