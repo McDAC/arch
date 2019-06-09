@@ -16,7 +16,7 @@ echo '2.4 создание разделов'
   echo;
   echo;
   echo;
-  echo +100M;
+  echo +200M;
 
   echo n;
   echo;
@@ -57,4 +57,4 @@ pacstrap /mnt base base-devel
 echo '3.3 Настройка системы'
 genfstab -pU /mnt >> /mnt/etc/fstab
 
-arch-chroot /mnt 
+arch-chroot /mnt sh -c "$(curl -fsSL git.io/2arch.sh)"
