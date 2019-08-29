@@ -80,7 +80,7 @@ elif [[ $dm_setting == 2 ]]; then
 fi
 
 echo 'Ставим шрифты'
-pacman -S ttf-liberation ttf-dejavu --noconfirm 
+pacman -S ttf-liberation ttf-dejavu opendesktop-fonts ttf-bitstream-vera --noconfirm 
 
 echo 'Ставим сеть'
 pacman -S networkmanager network-manager-applet ppp --noconfirm
